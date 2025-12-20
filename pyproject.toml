@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mist-api-info"
-version = "1.0.1"
+version = "1.0.2"
 description = "Automation tooling for mist-api-info."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -21,6 +21,12 @@ dev = [
   "ruff>=0.5.5",
   "black>=24.8"
 ]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
 
 [tool.pytest.ini_options]
 minversion = "8.0"

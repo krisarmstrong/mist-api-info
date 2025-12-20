@@ -29,3 +29,15 @@ build/
 
 # Logs
 *.log
+
+# Tooling defaults
+.env
+.env.*
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+.eggs/
+.tox/
+.nox/
