@@ -12,7 +12,7 @@ Options:
   -p, --project PATH          Root path of the project (default: current directory)
   -t, --type {major,minor,patch}  Segment to bump [patch]
   -f, --find-pattern PATTERN  Regex to find the version string
-                              (default: __version__\s*=\s*["'](\d+\.\d+\.\d+)["'])
+                              (default: __version__\\s*=\\s*["'](\\d+\\.\\d+\\.\\d+)["'])
   -c, --commit                Commit bumps to Git
   -g, --git-tag               Create a Git tag after bump
   -m, --message MSG           Commit/tag message (supports {version})
@@ -28,7 +28,7 @@ import argparse
 import subprocess
 import logging
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 
 def setup_logging(verbose: bool):
@@ -124,3 +124,4 @@ def main():
         logging.info("No version string found or no change needed.")
 
 if __name__ == '__main__':
+    main()
