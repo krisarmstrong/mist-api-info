@@ -1,10 +1,9 @@
-import os
-import requests
-import json
-import time
-import logging
 import argparse
 import asyncio
+import json
+import logging
+import time
+
 import aiohttp
 
 
@@ -20,30 +19,38 @@ async def get_data(session, headers, mist_url, site_id):
     device_url = f"{mist_url}sites/{site_id}/devices"
     device_stats_url = f"{mist_url}sites/{site_id}/stats/devices"
     wlan_url = f"{mist_url}sites/{site_id}/wlans"
-    beacons_url = f'{mist_url}sites/{site_id}/beacons'
-    clients_url = f'{mist_url}sites/{site_id}/clients'
-    
+    beacons_url = f"{mist_url}sites/{site_id}/beacons"
+    clients_url = f"{mist_url}sites/{site_id}/clients"
+
     device_resp = await session.get(device_url, headers=headers)
     device_stats_resp = await session.get(device_stats_url, headers=headers)
     wlan_resp = await session.get(wlan_url, headers=headers)
     beacons_resp = await session.get(beacons_url, headers=headers)
     clients_resp = await session.get(clients_url, headers=headers)
-    
-    if device_resp.status != 200 or device_stats_resp.status != 200 or wlan_resp.status != 200 or beacons_resp.status != 200 or clients_resp.status != 200:
-        raise Exception(f"Failed to retrieve information. Status code: {device_resp.status}, {device_stats_resp.status}, {wlan_resp.status}, {beacons_resp.status}, {clients_resp.status}")
-    
+
+    if (
+        device_resp.status != 200
+        or device_stats_resp.status != 200
+        or wlan_resp.status != 200
+        or beacons_resp.status != 200
+        or clients_resp.status != 200
+    ):
+        raise Exception(
+            f"Failed to retrieve information. Status code: {device_resp.status}, {device_stats_resp.status}, {wlan_resp.status}, {beacons_resp.status}, {clients_resp.status}"
+        )
+
     devices = await device_resp.json()
     device_stats = await device_stats_resp.json()
     wlans = await wlan_resp.json()
     beacons = await beacons_resp.json()
     clients = await clients_resp.json()
-    
+
     return {
-        'devices': devices,
-        'device_stats': device_stats,
-        'wlans': wlans,
-        'beacons': beacons,
-        'clients': clients
+        "devices": devices,
+        "device_stats": device_stats,
+        "wlans": wlans,
+        "beacons": beacons,
+        "clients": clients,
     }
 
 
@@ -56,11 +63,11 @@ async def write_to_json(data, file_name):
     :return: None.
     """
     try:
-        print("Writing to file: {}".format(file_name))
-        with open(file_name, 'w') as f:
+        print(f"Writing to file: {file_name}")
+        with open(file_name, "w") as f:
             json.dump(data, f, indent=4)
     except Exception as e:
-        print("An error occurred while writing to file: {}".format(e))
+        print(f"An error occurred while writing to file: {e}")
 
 
 async def write_to_html(data, file_name):
@@ -72,8 +79,8 @@ async def write_to_html(data, file_name):
     :return: None.
     """
     try:
-        print("Writing to file: {}".format(file_name))
-        with open(file_name, 'w') as f:
+        print(f"Writing to file: {file_name}")
+        with open(file_name, "w") as f:
             f.write("<html><head><title>Mist API Data</title>")
             f.write("<style>")
             f.write("body { font-family: Arial, sans-serif; }")
@@ -87,18 +94,20 @@ async def write_to_html(data, file_name):
                 f.write("</pre>")
             f.write("</body></html>")
     except Exception as e:
-        print("An error occurred while writing to file: {}".format(e))
+        print(f"An error occurred while writing to file: {e}")
 
 
 def parse_args():
     """
     Parses command line arguments using the argparse module.
-    
+
     :return: A Namespace object containing the values of the command line arguments.
     """
     parser = argparse.ArgumentParser()
     parser.add_argument("--config_file", default="config.json", help="Path to the config file")
-    parser.add_argument("--output_file", default="mist_api_data.json", help="Name of the output file")
+    parser.add_argument(
+        "--output_file", default="mist_api_data.json", help="Name of the output file"
+    )
     parser.add_argument("--log_file", default="mist_api_log.log", help="Name of the log file")
     args = parser.parse_args()
     return args
@@ -111,43 +120,40 @@ def read_config(file_path):
     :param file_path: The path to the JSON file.
     :return: A dictionary containing the configuration data.
     """
-    
-    with open(file_path, 'r') as f:
+
+    with open(file_path) as f:
         config = json.load(f)
     return config
 
+
 async def main(config_file, output_file, log_file):
     # Set up logging
-    logging.basicConfig(filename=log_file, level=logging.INFO, 
-                        format='%(asctime)s %(message)s')
-    
+    logging.basicConfig(filename=log_file, level=logging.INFO, format="%(asctime)s %(message)s")
+
     # Read configuration
     config = read_config(config_file)
-    token = config['token']
-    mist_url = config['mist_url']
-    site_id = config['site_id']
-    
+    token = config["token"]
+    mist_url = config["mist_url"]
+    site_id = config["site_id"]
+
     # Set up headers
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Token {}'.format(token)
-    }
-    
+    headers = {"Content-Type": "application/json", "Authorization": f"Token {token}"}
+
     async with aiohttp.ClientSession() as session:
         try:
             data = await get_data(session, headers, mist_url, site_id)
-            logging.info('Retrieved all data')
+            logging.info("Retrieved all data")
 
             # Validate the data before writing to file
             write_to_json(data, output_file)
-            
-            write_to_html(data, output_file.replace('.json', '.html'))
 
-        except Exception as e:    
-            logging.error(f'An error occurred: {e}')
+            write_to_html(data, output_file.replace(".json", ".html"))
+
+        except Exception as e:
+            logging.error(f"An error occurred: {e}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     start_time = time.time()
     args = parse_args()
     config_file = args.config_file
@@ -155,4 +161,4 @@ if __name__ == '__main__':
     log_file = args.log_file
     asyncio.run(main(config_file, output_file, log_file))
     run_time = time.time() - start_time
-    print(f'\nTotal runtime: {run_time:.2f} seconds')
+    print(f"\nTotal runtime: {run_time:.2f} seconds")

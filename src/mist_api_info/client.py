@@ -28,13 +28,12 @@ Disclaimer:
     - Use at your own risk.
 """
 
-
-import os
-import requests
-import json
-import time
-import logging
 import argparse
+import json
+import logging
+import time
+
+import requests
 
 
 def get_devices(headers, mist_url, site_id):
@@ -46,11 +45,11 @@ def get_devices(headers, mist_url, site_id):
     :param site_id: The ID of the network.
     :return: A dictionary of information about the devices in the network.
     """
-    
-    device_url = '{0}sites/{1}/devices'.format(mist_url,site_id)
+
+    device_url = f"{mist_url}sites/{site_id}/devices"
     response = requests.get(device_url, headers=headers)
     if response.status_code != 200:
-        raise Exception("Failed to get devices. Status code: {}".format(response.status_code))
+        raise Exception(f"Failed to get devices. Status code: {response.status_code}")
     return response.json()
 
 
@@ -63,14 +62,14 @@ def get_device_stats(headers, mist_url, site_id):
     :param site_id: The ID of the network.
     :return: A dictionary of device statistics.
     """
-    
-    device_stats_url = '{0}sites/{1}/stats/devices'.format(mist_url,site_id)
+
+    device_stats_url = f"{mist_url}sites/{site_id}/stats/devices"
     response = requests.get(device_stats_url, headers=headers)
     if response.status_code != 200:
-        raise Exception("Failed to get device stats. Status code: {}".format(response.status_code))
+        raise Exception(f"Failed to get device stats. Status code: {response.status_code}")
     return response.json()
-    
-    
+
+
 def get_wlans(headers, mist_url, site_id):
     """
     Retrieve information about the WLANs in a Mist network.
@@ -80,13 +79,13 @@ def get_wlans(headers, mist_url, site_id):
     :param site_id: The ID of the network.
     :return: A dictionary of information about the WLANs in the network.
     """
-    
-    wlan_url = '{0}sites/{1}/wlans'.format(mist_url,site_id)
+
+    wlan_url = f"{mist_url}sites/{site_id}/wlans"
     response = requests.get(wlan_url, headers=headers)
     if response.status_code != 200:
-        raise Exception("Failed to get WLANs. Status code: {}".format(response.status_code))
+        raise Exception(f"Failed to get WLANs. Status code: {response.status_code}")
     return response.json()
-   
+
 
 def get_beacons(headers, mist_url, site_id):
     """
@@ -97,23 +96,22 @@ def get_beacons(headers, mist_url, site_id):
     :param site_id: The ID of the network.
     :return: A dictionary of information about the beacons in the network.
     """
-    
-    beacons_url = '{0}sites/{1}/beacons'.format(mist_url,site_id)
+
+    beacons_url = f"{mist_url}sites/{site_id}/beacons"
     response = requests.get(beacons_url, headers=headers)
     if response.status_code != 200:
-        raise Exception("Failed to get beaconss. Status codes: {}".format(response.status_code))
+        raise Exception(f"Failed to get beaconss. Status codes: {response.status_code}")
     return response.json()
- 
+
 
 def get_aps(headers, mist_url, site_id):
-    '''
-    '''
-    ap_url = '{0}sites/{1}/stats/devices'.format(mist_url,site_id)
+    """ """
+    ap_url = f"{mist_url}sites/{site_id}/stats/devices"
     response = requests.get(ap_url, headers=headers)
     if response.status_code != 200:
         raise Exception("Failed to get APs")
     return response.json()
-    
+
 
 def get_bssids(headers, mist_url, site_id):
     return requests.Response.json()
@@ -128,11 +126,13 @@ def get_rf_stats(headers, mist_url, site_id):
     :param site_id: The ID of the network.
     :return: A dictionary of radio frequency statistics.
     """
-    
-    rf_stats_url = '{0}sites/{1}/stats/rf'.format(mist_url,site_id)
+
+    rf_stats_url = f"{mist_url}sites/{site_id}/stats/rf"
     response = requests.get(rf_stats_url, headers=headers)
     if response.status_code != 200:
-        raise Exception("Failed to get radio frequesency stats. Status code: {}".format(response.status_code))
+        raise Exception(
+            f"Failed to get radio frequesency stats. Status code: {response.status_code}"
+        )
     return response.json()
 
 
@@ -145,11 +145,13 @@ def get_clients(headers, mist_url, site_id):
     :param site_id: The ID of the network.
     :return: A dictionary of information about the client devices in the network.
     """
-    
-    client_url = '{0}sites/{1}/stats/clients'.format(mist_url,site_id)
+
+    client_url = f"{mist_url}sites/{site_id}/stats/clients"
     response = requests.get(client_url, headers=headers)
     if response.status_code != 200:
-        raise Exception("Failed to get client devices in network. Status code: {}".format(response.status_code))
+        raise Exception(
+            f"Failed to get client devices in network. Status code: {response.status_code}"
+        )
     return response.json()
 
 
@@ -162,11 +164,11 @@ def write_to_json(data, file_name):
     :return: None.
     """
     try:
-        print("Writing to file: {}".format(file_name))
-        with open(file_name, 'w') as f:
+        print(f"Writing to file: {file_name}")
+        with open(file_name, "w") as f:
             json.dump(data, f, indent=4)
     except Exception as e:
-        print("An error occurred while writing to file: {}".format(e))
+        print(f"An error occurred while writing to file: {e}")
 
 
 def write_to_html(data, file_name):
@@ -178,8 +180,8 @@ def write_to_html(data, file_name):
     :return: None.
     """
     try:
-        print("Writing to file: {}".format(file_name))
-        with open(file_name, 'w') as f:
+        print(f"Writing to file: {file_name}")
+        with open(file_name, "w") as f:
             f.write("<html><head><title>Mist API Data</title>")
             f.write("<style>")
             f.write("body { font-family: Arial, sans-serif; }")
@@ -193,7 +195,7 @@ def write_to_html(data, file_name):
                 f.write("</pre>")
             f.write("</body></html>")
     except Exception as e:
-        print("An error occurred while writing to file: {}".format(e))
+        print(f"An error occurred while writing to file: {e}")
 
 
 def read_config(file_path):
@@ -203,8 +205,8 @@ def read_config(file_path):
     :param file_path: The path to the JSON file.
     :return: A dictionary containing the configuration data.
     """
-    
-    with open(file_path, 'r') as f:
+
+    with open(file_path) as f:
         config = json.load(f)
     return config
 
@@ -212,86 +214,89 @@ def read_config(file_path):
 def parse_args():
     """
     Parses command line arguments using the argparse module.
-    
+
     :return: A Namespace object containing the values of the command line arguments.
     """
     parser = argparse.ArgumentParser()
     parser.add_argument("--config_file", default="config.json", help="Path to the config file")
-    parser.add_argument("--output_file", default="mist_api_data.json", help="Name of the output file")
+    parser.add_argument(
+        "--output_file", default="mist_api_data.json", help="Name of the output file"
+    )
     parser.add_argument("--log_file", default="mist_api_log.log", help="Name of the log file")
     args = parser.parse_args()
     return args
 
 
-
 def main(config_file, output_file, log_file):
-    '''
+    """
     Main function to retrieve information from the Mist API.
-    '''
-    
+    """
+
     # Set up logging
-    logging.basicConfig(filename=log_file, level=logging.INFO, 
-                        format='%(asctime)s %(message)s')
-    
+    logging.basicConfig(filename=log_file, level=logging.INFO, format="%(asctime)s %(message)s")
+
     # Read configuration
     config = read_config(config_file)
-    token = config['token']
-    mist_url = config['mist_url']
-    site_id = config['site_id']
-    
+    token = config["token"]
+    mist_url = config["mist_url"]
+    site_id = config["site_id"]
+
     # Set up headers
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Token {}'.format(token)
-    }
+    headers = {"Content-Type": "application/json", "Authorization": f"Token {token}"}
 
     try:
         devices = get_devices(headers, mist_url, site_id)
-        logging.info('Retrieved devices information')
+        logging.info("Retrieved devices information")
 
         device_stats = get_device_stats(headers, mist_url, site_id)
-        logging.info('Retrieved device statistics')
+        logging.info("Retrieved device statistics")
 
         wlans = get_wlans(headers, mist_url, site_id)
-        logging.info('Retrieved WLAN information')
+        logging.info("Retrieved WLAN information")
 
         beacons = get_beacons(headers, mist_url, site_id)
-        logging.info('Retrieved beacon information')
+        logging.info("Retrieved beacon information")
 
         clients = get_clients(headers, mist_url, site_id)
-        logging.info('Retrieved client information')
+        logging.info("Retrieved client information")
 
         # Validate the data before writing to file
-        write_to_json({
-                'devices': devices,
-                'device_stats': device_stats,
-                'wlans': wlans,
-                'beacons': beacons,
-                'clients': clients
-            }, output_file)
-        
-        write_to_html({
-                'devices': devices,
-                'device_stats': device_stats,
-                'wlans': wlans,
-                'beacons': beacons,
-                'clients': clients
-            }, output_file.replace('.json', '.html'))
+        write_to_json(
+            {
+                "devices": devices,
+                "device_stats": device_stats,
+                "wlans": wlans,
+                "beacons": beacons,
+                "clients": clients,
+            },
+            output_file,
+        )
 
-    except Exception as e:    
-        logging.error(f'An error occurred: {e}')    
-  
+        write_to_html(
+            {
+                "devices": devices,
+                "device_stats": device_stats,
+                "wlans": wlans,
+                "beacons": beacons,
+                "clients": clients,
+            },
+            output_file.replace(".json", ".html"),
+        )
 
-if __name__ == '__main__':
+    except Exception as e:
+        logging.error(f"An error occurred: {e}")
+
+
+if __name__ == "__main__":
     start_time = time.time()
-    
+
     args = parse_args()
-    
+
     config_file = args.config_file
     output_file = args.output_file
     log_file = args.log_file
-    
+
     main(config_file, output_file, log_file)
-    
+
     run_time = time.time() - start_time
-    print(f'\nTotal runtime: {run_time:.2f} seconds')
+    print(f"\nTotal runtime: {run_time:.2f} seconds")
