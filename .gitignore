@@ -1,43 +1,73 @@
-# Python
+# ╔═══════════════════════════════════════════════════════════════════════════╗
+# ║ Mist API Info - .gitignore                                                ║
+# ╠═══════════════════════════════════════════════════════════════════════════╣
+# ║ Python library for Juniper Mist API interaction                          ║
+# ║ Stack: Python 3.x, async/sync HTTP clients, pytest                       ║
+# ╚═══════════════════════════════════════════════════════════════════════════╝
+
+# ─── Python Core ─────────────────────────────────────────────────────────────
 __pycache__/
 *.py[cod]
 *$py.class
 *.pyc
+*.pyo
+*.pyd
 
-# Virtual environments
-venv/
+# ─── Virtual Environments ────────────────────────────────────────────────────
 .venv/
+venv/
 env/
 .env/
 ENV/
 env.bak/
 venv.bak/
+.Python
 
-# Distribution / packaging
+# ─── Distribution & Packaging ────────────────────────────────────────────────
+# Build artifacts for PyPI publishing
 *.egg-info/
 dist/
 build/
-.Python
-
-# IDE
-.vscode/
-.idea/
-*.swp
-
-# OS
-.DS_Store
-
-# Logs
-*.log
-
-# Tooling defaults
-.env
-.env.*
-.mypy_cache/
-.pytest_cache/
-.ruff_cache/
-.coverage
-coverage.xml
 .eggs/
+*.egg
+MANIFEST
+
+# ─── Testing & Coverage ──────────────────────────────────────────────────────
+.pytest_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
 .tox/
 .nox/
+
+# ─── Type Checking & Linting ─────────────────────────────────────────────────
+.mypy_cache/
+.ruff_cache/
+.dmypy.json
+dmypy.json
+.pytype/
+
+# ─── Environment & Secrets ───────────────────────────────────────────────────
+# API keys and tokens should never be committed
+.env
+.env.*
+.env.local
+*.pem
+*.key
+
+# Mist API credentials
+mist_credentials.json
+.mist_token
+api_keys.json
+
+# ─── Logs ────────────────────────────────────────────────────────────────────
+*.log
+*.sqlite3
+*.db
+
+# ─── Project-Specific ────────────────────────────────────────────────────────
+# Local testing/dev scripts
+scratch/
+playground/
+test_local.py

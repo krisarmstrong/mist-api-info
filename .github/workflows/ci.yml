@@ -1,99 +1,60 @@
-name: CI/CD
+name: CI
 
 on:
   push:
-    branches: [ main, master ]
-    tags:
-      - 'v*'
+    branches: [main, master]
+    tags: ['v'*']
   pull_request:
-    branches: [ main, master ]
+    branches: [main, master]
+
+permissions:
+  contents: read
 
 jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff
+
+      - name: Run Ruff
+        run: ruff check .
+
   test:
-    runs-on: ${{ matrix.os }}
+    name: Test
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
-        python-version: "3.14"
-
+        python-version: ['3.11', '3.12']
     steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
+      - uses: actions/checkout@v4
 
-    - name: Set up Python 3.14
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.14"
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install nox
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e[dev]
 
-    - name: Run tests with nox
-      run: nox -s tests
-      continue-on-error: false
+      - name: Run tests
+        run: pytest -v --cov=src --cov-report=xml
 
-  release:
-    needs: test
-    if: startsWith(github.ref, 'refs/tags/v')
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      id-token: write
-
-    steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.14"
-
-    - name: Install build dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install build twine
-
-    - name: Build package
-      run: python -m build
-
-    - name: Extract version from tag
-      id: get_version
-      run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
-
-    - name: Create GitHub Release
-      uses: softprops/action-gh-release@v1
-      with:
-        name: Release ${{ steps.get_version.outputs.VERSION }}
-        body: |
-          ## Release ${{ steps.get_version.outputs.VERSION }}
-
-          ### Installation
-          ```bash
-          pip install ${{ github.event.repository.name }}==${{ steps.get_version.outputs.VERSION }}
-          ```
-
-          ### Changes
-          See [CHANGELOG.md](CHANGELOG.md) for details.
-
-          ---
-
-          🤖 Generated with [GitHub Actions](https://github.com/${{ github.repository }}/actions)
-        files: |
-          dist/*
-        draft: false
-        prerelease: false
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Publish to PyPI
-      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
-      env:
-        TWINE_USERNAME: __token__
-        TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-      run: |
-        twine upload dist/* --skip-existing || echo "Package may already exist on PyPI"
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        if: matrix.python-version == '3.11'
+        with:
+          files: ./coverage.xml
+          fail_ci_if_error: false
