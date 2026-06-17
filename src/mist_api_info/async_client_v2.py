@@ -9,12 +9,12 @@ import aiohttp
 
 async def get_data(session, headers, mist_url, site_id):
     """
-    Retrieve information about the devices, device stats, WLANs, beacons and clients in a Mist network.
+    Retrieve information about Mist devices, stats, WLANs, beacons, and clients.
 
     :param headers: A dictionary containing the HTTP headers required for the API request.
     :param mist_url: The URL of the Mist API.
     :param site_id: The ID of the network.
-    :return: A dictionary of information about the devices, device stats, WLANs, beacons and clients in the network.
+    :return: Information about devices, stats, WLANs, beacons, and clients.
     """
     device_url = f"{mist_url}sites/{site_id}/devices"
     device_stats_url = f"{mist_url}sites/{site_id}/stats/devices"
@@ -35,9 +35,11 @@ async def get_data(session, headers, mist_url, site_id):
         or beacons_resp.status != 200
         or clients_resp.status != 200
     ):
-        raise Exception(
-            f"Failed to retrieve information. Status code: {device_resp.status}, {device_stats_resp.status}, {wlan_resp.status}, {beacons_resp.status}, {clients_resp.status}"
+        statuses = (
+            f"{device_resp.status}, {device_stats_resp.status}, {wlan_resp.status}, "
+            f"{beacons_resp.status}, {clients_resp.status}"
         )
+        raise Exception(f"Failed to retrieve information. Status code: {statuses}")
 
     devices = await device_resp.json()
     device_stats = await device_stats_resp.json()
