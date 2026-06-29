@@ -73,20 +73,20 @@ async def get_beacons(headers, mist_url, site_id, session):
         return await response.json()
 
 
-async def get_wlans(session, headers, mist_url, site_id):
+async def get_clients(session, headers, mist_url, site_id):
     """
-    Retrieve information about the WLANs in a Mist network.
+    Retrieve information about clients in a Mist network.
 
     :param session: A session object created using aiohttp.ClientSession.
     :param headers: A dictionary containing the HTTP headers required for the API request.
     :param mist_url: The URL of the Mist API.
     :param site_id: The ID of the network.
-    :return: A dictionary of information about the WLANs in the network.
+    :return: A dictionary of information about clients in the network.
     """
-    wlan_url = f"{mist_url}sites/{site_id}/wlans"
-    async with session.get(wlan_url, headers=headers) as response:
+    client_url = f"{mist_url}sites/{site_id}/stats/clients"
+    async with session.get(client_url, headers=headers) as response:
         if response.status != 200:
-            raise Exception(f"Failed to get WLANs. Status code: {response.status}")
+            raise Exception(f"Failed to get clients. Status code: {response.status}")
         return await response.json()
 
 

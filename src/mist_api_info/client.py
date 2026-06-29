@@ -3,7 +3,9 @@ Author: Kris Armstrong
 Version: 1.0
 Date: 2023-02-07
 
-A Python3 script for retrieving information about a Mist network from the Mist API. The script uses the 'requests' library to send HTTP requests to the Mist API and retrieve information about devices, WLANs, beacons, clients, and radio frequency statistics. The information is returned as JSON and is printed to the console.
+A Python3 script for retrieving information about a Mist network from the Mist API.
+The script uses the 'requests' library to retrieve devices, WLANs, beacons,
+clients, and radio frequency statistics, then prints the JSON response.
 
 Dependencies:
     - requests library
@@ -47,7 +49,7 @@ def get_devices(headers, mist_url, site_id):
     """
 
     device_url = f"{mist_url}sites/{site_id}/devices"
-    response = requests.get(device_url, headers=headers)
+    response = requests.get(device_url, headers=headers, timeout=30)
     if response.status_code != 200:
         raise Exception(f"Failed to get devices. Status code: {response.status_code}")
     return response.json()
@@ -64,7 +66,7 @@ def get_device_stats(headers, mist_url, site_id):
     """
 
     device_stats_url = f"{mist_url}sites/{site_id}/stats/devices"
-    response = requests.get(device_stats_url, headers=headers)
+    response = requests.get(device_stats_url, headers=headers, timeout=30)
     if response.status_code != 200:
         raise Exception(f"Failed to get device stats. Status code: {response.status_code}")
     return response.json()
@@ -81,7 +83,7 @@ def get_wlans(headers, mist_url, site_id):
     """
 
     wlan_url = f"{mist_url}sites/{site_id}/wlans"
-    response = requests.get(wlan_url, headers=headers)
+    response = requests.get(wlan_url, headers=headers, timeout=30)
     if response.status_code != 200:
         raise Exception(f"Failed to get WLANs. Status code: {response.status_code}")
     return response.json()
@@ -98,7 +100,7 @@ def get_beacons(headers, mist_url, site_id):
     """
 
     beacons_url = f"{mist_url}sites/{site_id}/beacons"
-    response = requests.get(beacons_url, headers=headers)
+    response = requests.get(beacons_url, headers=headers, timeout=30)
     if response.status_code != 200:
         raise Exception(f"Failed to get beaconss. Status codes: {response.status_code}")
     return response.json()
@@ -107,7 +109,7 @@ def get_beacons(headers, mist_url, site_id):
 def get_aps(headers, mist_url, site_id):
     """ """
     ap_url = f"{mist_url}sites/{site_id}/stats/devices"
-    response = requests.get(ap_url, headers=headers)
+    response = requests.get(ap_url, headers=headers, timeout=30)
     if response.status_code != 200:
         raise Exception("Failed to get APs")
     return response.json()
@@ -128,7 +130,7 @@ def get_rf_stats(headers, mist_url, site_id):
     """
 
     rf_stats_url = f"{mist_url}sites/{site_id}/stats/rf"
-    response = requests.get(rf_stats_url, headers=headers)
+    response = requests.get(rf_stats_url, headers=headers, timeout=30)
     if response.status_code != 200:
         raise Exception(
             f"Failed to get radio frequesency stats. Status code: {response.status_code}"
@@ -147,7 +149,7 @@ def get_clients(headers, mist_url, site_id):
     """
 
     client_url = f"{mist_url}sites/{site_id}/stats/clients"
-    response = requests.get(client_url, headers=headers)
+    response = requests.get(client_url, headers=headers, timeout=30)
     if response.status_code != 200:
         raise Exception(
             f"Failed to get client devices in network. Status code: {response.status_code}"
